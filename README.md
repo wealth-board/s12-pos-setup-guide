@@ -231,6 +231,11 @@ Log in as **`admin`**. If you didn't set a password during setup, try leaving it
 - [ ] **Backups:** check that files appear in the backup folder after a day, and copy them somewhere off the laptop.
 - [ ] **Other tills or devices** (e.g. the PP4 Android app): they connect over the network on port 1433. Allow port 1433 (TCP) through Windows Firewall on this laptop, and point them at its IP address.
 
+## More documentation
+
+- [Running the POS on Linux with Wine](docs/linux-wine.md): what may work, what probably won't, and the alternatives
+- [Hosting the database remotely](docs/remote-database.md): a shop server for several tills, a Linux/Docker server, a cloud server over VPN, moving data, and backups
+
 ## Troubleshooting
 
 | Problem | Fix |
