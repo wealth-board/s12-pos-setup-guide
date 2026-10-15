@@ -2,7 +2,14 @@
 
 This guide sets up the S12 multi-language POS ("Sales System") on a new Windows laptop, using SQL Server 2022 Express as its database. It follows a real installation done on 15 Oct 2026; the screenshots are from that install.
 
-> **Before you start:** you need a Windows 10/11 laptop with admin rights, and the installer bundle (the `启明星多语言软件` folder, e.g. on a USB stick).
+> **Before you start:** you need a Windows 10/11 laptop with admin rights, and the installer bundle.
+
+## Download the installer bundle
+
+The installers are too big to keep in the repo itself, so they're attached to a release:
+
+1. Open the [**v12.5 release**](https://github.com/omoinjm/s12-pos-setup-guide/releases/tag/v12.5) and download **`s12-pos-installer-bundle.zip`** (about 430 MB). This is the original `启明星多语言软件.zip`, renamed.
+2. Extract it. You'll get a `启明星多语言软件` folder containing the files listed below.
 
 ---
 
