@@ -255,6 +255,7 @@ What this means in practice:
 
 - [Running the POS on Linux with Wine](docs/linux-wine.md): what may work, what probably won't, and the alternatives
 - [Hosting the database remotely](docs/remote-database.md): a shop server for several tills, a Linux/Docker server, a cloud server over VPN, moving data, and backups
+- [Capturing dongle ↔ POS communication](docs/dongle-capture.md): how to see the USB traffic between the licence dongle and the POS when the dongle isn't being detected
 
 ## Troubleshooting
 
@@ -266,5 +267,5 @@ What this means in practice:
 | Configuration Manager shows "no items" | You opened the **(32bit)** section. Use the plain **SQL Server Network Configuration**. |
 | "You did not complete the initial Setup…" | Finish every page of the Setting wizard (Step 8). |
 | Upgrade error about `khcode` / `cpcode` | Safe to ignore. See [Database upgrade error log](#database-upgrade-error-log). |
-| "No encryption lock detected" / POS stuck in trial mode | Plug the USB dongle in (try another USB port), then restart the POS. See [Licensing (USB dongle)](#licensing-usb-dongle). |
+| "No encryption lock detected" / POS stuck in trial mode | Plug the USB dongle in (try another USB port), then restart the POS. See [Licensing (USB dongle)](#licensing-usb-dongle). To check whether the POS is reaching the dongle at all, see [Capturing dongle ↔ POS communication](docs/dongle-capture.md). |
 | "Your trial has expired…" | The dongle isn't connected or isn't being detected. Connect it and restart the POS. If it still fails, contact the vendor. |
