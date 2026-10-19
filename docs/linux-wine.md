@@ -16,7 +16,7 @@ The S12 POS is a 32-bit Windows program (`PE32` executable), built with Delphi. 
 | Barcode scanner | ✅ Works | USB scanners act like a keyboard |
 | Receipt printer | ⚠️ Possible | Through CUPS, or by mapping a COM port |
 | Cash drawer | ⚠️ Possible | Usually opened through the receipt printer |
-| Licence / activation | ⚠️ Uncertain | The licence is tied to a **Hardware ID**, which Wine may report differently or change between Wine versions |
+| Licence (USB dongle) | ⚠️ Uncertain | **The second-biggest risk.** The licence is a **USB dongle** that the POS reads directly as a USB HID device. Wine has to pass it through, or the POS falls back to trial mode. See [Step 5](#step-5-printers-the-cash-drawer-and-the-licence-dongle) |
 | SQL Server itself | ❌ Not under Wine | Run SQL Server **natively** on Linux instead (see [remote-database.md](remote-database.md)) |
 
 ## Step 1: Install Wine
@@ -100,7 +100,7 @@ In **Database Setting**, use the database server's IP address, not `.\SQLEXPRESS
 
 Click **Server Connection Test** and then **Database Test**.
 
-## Step 5: Printers and the cash drawer
+## Step 5: Printers, the cash drawer and the licence dongle
 
 - **Network or USB receipt printer:** add it in CUPS (`http://localhost:631`), as a **raw** queue if the POS sends ESC/POS commands. Wine shows CUPS printers to Windows programs automatically.
 - **Serial (COM) printer or USB-serial adapter:** map it to a COM port:
@@ -109,6 +109,15 @@ Click **Server Connection Test** and then **Database Test**.
   sudo usermod -aG dialout "$USER"     # then log out and back in
   ```
 - **Cash drawer:** most are wired to the receipt printer and open when the printer gets a "kick" command. If printing works, the drawer usually works too.
+- **Licence dongle:** the POS looks for the dongle through `Bin\SKRTL.dll`, which finds it as a **USB HID device** (USB vendor ID `5148`). This is the part most likely to fail under Wine. To give it a chance:
+  - Use a recent Wine. Older versions couldn't pass raw HID devices through to Windows programs at all.
+  - Give your user access to the dongle's `/dev/hidraw*` device with a udev rule, then unplug the dongle and plug it back in:
+    ```bash
+    echo 'SUBSYSTEM=="hidraw", ATTRS{idVendor}=="5148", TAG+="uaccess"' | sudo tee /etc/udev/rules.d/70-s12pos-dongle.rules
+    sudo udevadm control --reload-rules
+    lsusb | grep -i 5148      # the dongle should be listed
+    ```
+  - Start the POS. If it shows *"No encryption lock detected"* or opens in trial mode, Wine isn't passing the dongle through. Use a [Windows VM](#alternatives) instead.
 
 ## Step 6: Start the POS
 
@@ -127,14 +136,14 @@ Go through this list before you serve customers with it:
 - [ ] Scan barcodes
 - [ ] Run a refund and an end-of-day report
 - [ ] Restart the laptop and check that it all still works
-- [ ] **Activation:** check that the licence stays valid after a reboot and after updating Wine. A changed Hardware ID may mean asking the vendor to re-activate.
+- [ ] **Licence dongle:** check that the POS opens fully licensed (not in trial mode) with the dongle plugged in. Check again after a reboot, after unplugging and replugging the dongle, and after updating Wine.
 - [ ] Remember the vendor **won't support** a Wine setup
 
 ## Alternatives
 
 | Option | Reliability | Notes |
 |---|---|---|
-| **Windows virtual machine** (virt-manager/KVM, VirtualBox) | ✅ High | Real Windows, so everything in the [main guide](../README.md) applies. Pass the USB printer and scanner through to the VM. Needs a Windows licence and about 4 GB RAM for the VM. |
+| **Windows virtual machine** (virt-manager/KVM, VirtualBox) | ✅ High | Real Windows, so everything in the [main guide](../README.md) applies. Pass the USB printer, scanner and **licence dongle** through to the VM. Needs a Windows licence and about 4 GB RAM for the VM. |
 | **Linux database server + Windows tills** | ✅ High | See [remote-database.md](remote-database.md). Linux hosts the data, the tills run Windows. |
 | **Wine** (this page) | ⚠️ Unknown | No Windows licence needed. Unsupported. |
 

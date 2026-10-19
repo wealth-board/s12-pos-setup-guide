@@ -226,10 +226,30 @@ Log in as **`admin`**. If you didn't set a password during setup, try leaving it
 
 ## After installation
 
-- [ ] **Licence:** the POS runs as a **30-day trial** until it's registered. Get a registration code from the vendor. They may connect remotely with Sunlogin to do it.
+- [ ] **Licence:** the POS needs the vendor's **USB licence dongle** plugged in. Without it, it runs as a **30-day trial**. See [Licensing (USB dongle)](#licensing-usb-dongle).
 - [ ] **Hardware:** connect the receipt printer, barcode scanner and cash drawer, and make a test sale.
 - [ ] **Backups:** check that files appear in the backup folder after a day, and copy them somewhere off the laptop.
 - [ ] **Other tills or devices** (e.g. the PP4 Android app): they connect over the network on port 1433. Allow port 1433 (TCP) through Windows Firewall on this laptop, and point them at its IP address.
+
+## Licensing (USB dongle)
+
+The POS is licensed by a **USB hardware key** (dongle). The Chinese screens call it a 加密锁, "encryption lock". There are three parts:
+
+1. **The dongle.** At startup, `PosSale.exe` and `PosAdmin.exe` look for the dongle using the vendor's dongle library `Bin\SKRTL.dll`. They read its **serial number**, plus licence data held in its memory. `PosAdmin.exe` can also write to the dongle.
+2. **Trial mode.** If no valid dongle is found, the POS runs as a **trial**. Some functions are blocked ("Sorry, the trial version can't do this"), the number of products is capped, and it stops after the trial days run out. The messages you'll see are:
+   - *No encryption lock detected* / *No valid encryption lock detected*
+   - *Your trial has expired; to continue, connect the encryption lock*
+   - *Application initialisation failed; to fix this, connect the encryption lock*
+3. **Activation code.** The **Activate** screen shows a **serial number**. Send it to the vendor; they send back an **activation code**, which you enter and **Save**. Optional add-ons (**附加功能**, "add-on functions") are activated the same way on their own screen, which also asks for a verification code.
+
+What this means in practice:
+
+- **Keep the dongle plugged into the till.** If it's unplugged, the POS falls back to trial mode.
+- **The licence goes with the dongle, not with the laptop.** To move the POS to a new laptop, move the dongle; you shouldn't need a new licence. Check with the vendor whether the activation code has to be entered again.
+- **Each till probably needs its own dongle.** No network licence server was found in the software, so each till most likely needs its own dongle. Ask the vendor before adding tills.
+- **Treat the dongle like a key to the shop.** If it's lost or broken, only the vendor can replace it. Write its serial number down (from the **About** screen) somewhere safe.
+
+> How we know this: the details above come from the installer's files (the dongle library, the programs that load it, and the POS's own messages and screens). The vendor hasn't documented them. They haven't been tested with a real dongle.
 
 ## More documentation
 
@@ -246,3 +266,5 @@ Log in as **`admin`**. If you didn't set a password during setup, try leaving it
 | Configuration Manager shows "no items" | You opened the **(32bit)** section. Use the plain **SQL Server Network Configuration**. |
 | "You did not complete the initial Setup…" | Finish every page of the Setting wizard (Step 8). |
 | Upgrade error about `khcode` / `cpcode` | Safe to ignore. See [Database upgrade error log](#database-upgrade-error-log). |
+| "No encryption lock detected" / POS stuck in trial mode | Plug the USB dongle in (try another USB port), then restart the POS. See [Licensing (USB dongle)](#licensing-usb-dongle). |
+| "Your trial has expired…" | The dongle isn't connected or isn't being detected. Connect it and restart the POS. If it still fails, contact the vendor. |
