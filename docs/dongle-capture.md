@@ -25,6 +25,28 @@ isn't reaching it — that's the thing to take to the vendor. If you see nothing
 all, the dongle isn't enumerating (bad port, bad cable, or Wine/VM isn't passing
 it through).
 
+## Identifying the dongle vendor
+
+Before (or while) you capture, it's worth finding out **who made the dongle** — it
+tells you which drivers to install and who to contact for support. All of this just
+reads information the device and the installed files already expose:
+
+1. **Device Manager / USBView** (Windows): plug the dongle in, find it under *Human
+   Interface Devices*, then **Properties → Details → Hardware IDs**. You'll see
+   `USB\VID_5148&PID_xxxx`. The same dialog's **Manufacturer** and product strings
+   usually name the vendor.
+2. **The dongle library's metadata**: right-click `Bin\SKRTL.dll` → **Properties →
+   Details**. The *Company name*, *Product name* and *Copyright* fields usually name
+   the dongle maker.
+3. **Cross-check the vendor ID**: look up `VID 5148` (confirm first whether it's hex,
+   `0x5148`, or decimal) against the USB-IF / Linux `usb.ids` database. A VID that
+   isn't registered to anyone is itself a hint that it's a smaller vendor.
+
+It is **not** Keysight (that's test-and-measurement equipment, not a software-licence
+dongle). The library name and VID don't match the big Western dongle brands
+(SafeNet/Sentinel HASP, Wibu CodeMeter, Feitian Rockey, KEYLOK) either, so it's most
+likely a smaller — probably Chinese — dongle vendor. The checks above will confirm it.
+
 ## Windows: USBPcap
 
 1. Install [Wireshark](https://www.wireshark.org/) and, in its installer, tick
